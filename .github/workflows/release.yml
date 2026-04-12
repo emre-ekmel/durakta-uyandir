@@ -1,0 +1,47 @@
+name: Build and Release Android APK
+
+on:
+  push:
+    tags:
+      - 'v*' # Sadece v ile başlayan bir tag yüklendiğinde otomatik çalışır (örn: v1.0.0)
+  workflow_dispatch: # GitHub'da Actions sekmesine manuel "Çalıştır" butonu ekler
+
+permissions:
+  contents: write # Release oluşturabilmesi için bota yazma izni verilir
+
+jobs:
+  build:
+    name: Build APK & Publish Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Kodları Çek (Checkout)
+        uses: actions/checkout@v4
+
+      - name: Java Kurulumu
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17' # Android derlemesi için gerekli
+
+      - name: Flutter Kurulumu
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable' # En güncel ve stabil flutter sürümünü kullanır
+
+      - name: Paketleri İndir
+        run: flutter pub get
+
+      - name: Code Generation (Hive & DI)
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Release APK Oluştur
+        run: flutter build apk --release
+
+      - name: GitHub Release Ana Sayfasına Yayınla
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/app/outputs/flutter-apk/app-release.apk # Oluşan apk'yı bulup yükler
+          generate_release_notes: true # Otomatik sürüm notları oluşturur
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

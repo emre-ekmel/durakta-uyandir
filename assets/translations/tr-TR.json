@@ -1,0 +1,83 @@
+{
+    "common": {
+        "cancel": "İptal",
+        "save": "Kaydet",
+        "ok": "Tamam",
+        "error": "Hata",
+        "deleted": "Silindi",
+        "delete": "Sil",
+        "undo": "Geri Al",
+        "nav_home": "Ana Sayfa",
+        "nav_add": "Alarm Ekle",
+        "nav_settings": "Ayarlar",
+        "time_min": "dk",
+        "time_hour": "sa"
+    },
+    "home": {
+        "no_alarms": "Henüz alarm eklenmedi",
+        "add_hint": "Alarm eklemek için + butonuna basın",
+        "location_waiting": "Konum bekleniyor...",
+        "alarm_off": "Alarm Kapalı",
+        "location_unknown": "Konum bilinmiyor",
+        "distance_away": "{}m uzaklıkta",
+        "active": "Aktif",
+        "passive": "Pasif",
+        "delete_confirm": "Alarmı silmek istediğinize emin misiniz?"
+    },
+    "add_alarm": {
+        "title": "Yeni Alarm Ekle",
+        "name_label": "Alarm Adı",
+        "search_hint": "Durak veya Konum Ara...",
+        "wake_distance": "Uyandırma Mesafesi:",
+        "selected_location": "Seçilen Konum:",
+        "error_no_name_loc": "Lütfen isim girin ve haritadan yer seçin",
+        "remove_selection_tooltip": "Seçimi Kaldır",
+        "loc_permission_title": "Konum İzni Gerekli",
+        "loc_permission_desc": "Alarmın çalışabilmesi için konum iznini ayarlardan açmanız gerekmektedir.",
+        "open_settings": "Ayarları Aç",
+        "loc_denied": "Konum izni reddedildi.",
+        "loc_service_off": "Konum servisleri kapalı. Lütfen açınız.",
+        "no_result": "Sonuç bulunamadı."
+    },
+    "settings": {
+        "title": "Ayarlar",
+        "appearance": "Görünüm",
+        "system": "Sistem",
+        "light": "Aydınlık",
+        "dark": "Karanlık",
+        "alarm_prefs": "Alarm Tercihleri",
+        "sound": "Sesli Uyarı",
+        "sound_desc": "Hedefe varınca ses çal",
+        "vibration": "Titreşim",
+        "vibration_desc": "Hedefe varınca titreşim yap",
+        "notification": "Bildirim",
+        "notification_desc": "Kilit ekranında bildirim göster",
+        "headphone": "Akıllı Kulaklık Modu",
+        "headphone_desc": "Sadece kulaklık takılıysa ses çıkar",
+        "headphone_warn": "Bu ayarı kullanmak için önce sesi açın.",
+        "battery_saver": "Pil Tasarrufu Modu",
+        "battery_saver_desc": "Konum daha az sık güncellenir (önerilir)",
+        "other": "Diğer",
+        "privacy": "Gizlilik ve KVKK",
+        "about": "Uygulama Hakkında",
+        "language": "Dil / Language",
+        "select_language": "Dil Seçin",
+        "privacy_text": "**AYDINLATMA METNİ VE GİZLİLİK POLİTİKASI**\n\nBu uygulama (\"Durakta Uyandır\"), kişisel verilerinizi 6698 sayılı Kişisel Verilerin Korunması Kanunu'na (\"KVKK\") uygun olarak sadece hizmetin doğası gereği işlemektedir.\n\n1. Hangi Veriler Toplanıyor?\n* Konum Verisi: Alarmın çalacağı durağa ne kadar yaklaştığınızı hesaplamak için anlık konum veriniz kullanılır. Bu veri sunucularımıza gönderilmez, sadece telefonunuzun kendi içinde işlenir.\n* Arka Plan Konumu: Uygulama kapalıyken veya ekran kilitliyken alarmın çalabilmesi için konum verisine arka planda erişilir.\n\n2. Veriler Nerede Saklanıyor?\nTüm veriler (alarm listesi, ayarlar) şifreli olarak kendi cihazınızda saklanır. Bulut sunucularda yedeklenmez.\n\n3. Üçüncü Taraflarla Paylaşım\nKişisel verileriniz reklam veya analiz amacıyla üçüncü taraflarla paylaşılmaz. Sadece adres arama işlemi için anonim olarak harita servislerine (Nominatim/Photon) sorgu gönderilir.\n\n4. Haklarınız\nUygulamayı silerek tüm verilerinizi anında yok edebilirsiniz."
+    },
+    "permissions": {
+        "background_title": "Arka Plan Konum İzni",
+        "background_desc": "Alarmın cebinizde veya kilitli ekranda çalışabilmesi için konum iznini 'Her Zaman İzin Ver' olarak seçmeniz gerekmektedir.",
+        "later": "Daha Sonra"
+    },
+    "detail": {
+        "title": "Alarm Detay",
+        "edit_hint": "Haritaya dokunarak yeni konum seçebilirsiniz.",
+        "name_required": "İsim boş olamaz",
+        "updated": "Durak güncellendi!",
+        "delete_title": "Durağı Sil",
+        "delete_confirm": "'{}' durağını silmek istediğinize emin misiniz?",
+        "edit_location_name": "Konumu/İsmi Güncelle",
+        "edit_map_hint": "Yeni konumu seçmek için haritaya dokunun.",
+        "alarm_radius": "Alarm Çapı: {}m"
+    }
+}

@@ -1,0 +1,83 @@
+    {
+        "common": {
+            "cancel": "Cancel",
+            "save": "Save",
+            "ok": "OK",
+            "error": "Error",
+            "deleted": "Deleted",
+            "delete": "Delete",
+            "undo": "Undo",
+            "nav_home": "Home",
+            "nav_add": "Add Alarm",
+            "nav_settings": "Settings",
+            "time_min": "min",
+            "time_hour": "h"
+        },
+        "home": {
+            "no_alarms": "No alarms added yet",
+            "add_hint": "Press + button to add an alarm",
+            "location_waiting": "Waiting for location...",
+            "alarm_off": "Alarm Off",
+            "location_unknown": "Location unknown",
+            "distance_away": "{}m away",
+            "active": "Active",
+            "passive": "Passive",
+            "delete_confirm": "Are you sure you want to delete this alarm?"
+        },
+        "add_alarm": {
+            "title": "Add New Alarm",
+            "name_label": "Alarm Name",
+            "search_hint": "Search Stop or Location...",
+            "wake_distance": "Wake-up Distance:",
+            "selected_location": "Selected Location:",
+            "error_no_name_loc": "Please enter a name and select a location",
+            "remove_selection_tooltip": "Remove Selection",
+            "loc_permission_title": "Location Permission Required",
+            "loc_permission_desc": "You need to enable location permissions in settings for the alarm to work.",
+            "open_settings": "Open Settings",
+            "loc_denied": "Location permission denied.",
+            "loc_service_off": "Location services are disabled. Please enable them.",
+            "no_result": "No results found."
+        },
+        "settings": {
+            "title": "Settings",
+            "appearance": "Appearance",
+            "system": "System",
+            "light": "Light",
+            "dark": "Dark",
+            "alarm_prefs": "Alarm Preferences",
+            "sound": "Sound Alert",
+            "sound_desc": "Play sound when arriving",
+            "vibration": "Vibration",
+            "vibration_desc": "Vibrate when arriving",
+            "notification": "Notification",
+            "notification_desc": "Show notification on lock screen",
+            "headphone": "Smart Headphone Mode",
+            "headphone_desc": "Only play sound if headphones are connected",
+            "headphone_warn": "Enable sound first to use this setting.",
+            "battery_saver": "Battery Saver Mode",
+            "battery_saver_desc": "Updates location less frequently (recommended)",
+            "other": "Other",
+            "privacy": "Privacy & Policy",
+            "about": "About App",
+            "language": "Language",
+            "select_language": "Select Language",
+            "privacy_text": "**PRIVACY POLICY AND CLARIFICATION TEXT**\n\nThis application (\"Wake Me at the Stop\") processes your personal data only for the nature of the service, in accordance with the Law on the Protection of Personal Data No. 6698 (\"KVKK\").\n\n1. What Data is Collected?\n* Location Data: Used to calculate how close you are to the alarm stop. This data is not sent to our servers, it is processed only within your phone.\n* Background Location: Accessed in the background so the alarm can ring when the app is closed or the screen is locked.\n\n2. Where is Data Stored?\nAll data (alarm list, settings) is stored encrypted on your own device. It is not backed up on cloud servers.\n\n3. Sharing with Third Parties\nYour personal data is not shared with third parties for advertising or analysis purposes. Queries are sent anonymously to map services (Nominatim/Photon) only for address search operations.\n\n4. Your Rights\nYou can instantly destroy all your data by deleting the application."
+        },
+        "permissions": {
+            "background_title": "Background Location Permission",
+            "background_desc": "For the alarm to work in your pocket or on lock screen, you must select 'Allow all the time' for location permission.",
+            "later": "Later"
+        },
+        "detail": {
+            "title": "Alarm Detail",
+            "edit_hint": "You can touch the map to select a new location.",
+            "name_required": "Name cannot be empty",
+            "updated": "Stop updated!",
+            "delete_title": "Delete Stop",
+            "delete_confirm": "Are you sure you want to delete '{}'?",
+            "edit_location_name": "Update Location/Name",
+            "edit_map_hint": "Tap map to select new location.",
+            "alarm_radius": "Alarm Radius: {}m"
+        }
+    }

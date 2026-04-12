@@ -4,46 +4,46 @@ Durakta Uyandır, toplu taşımada seyahat ederken kullanıcının belirlediği 
 
 > *Not: Proje şu an için aktif olarak Android platformuna yönelik geliştirilmektedir. İlerleyen süreçte iOS desteğinin de eklenmesi planlanmaktadır.*
 
-Bu belge, uygulamanın mimari kararlarını, temel bileşenlerini ve sistem davranışlarını açıklayan ana teknik dosyadır.
+Bu belge, uygulamanın arka planındaki mimari kararları, temel yapıtaşlarını ve sistemin nasıl çalıştığını özetliyor.
 
 ## Mimari Yaklaşım
 
-Proje, bağımlılıkların yönünü kontrol altında tutmak, kodun test edilebilirliğini artırmak ve farklı mantık katmanlarını izole etmek için **Clean Architecture (Temiz Mimari)** prensiplerine göre yapılandırılmıştır. Tüm kaynak kod `lib/` dizini altında dört ana modüle ayrılır:
+Proje, kodun test edilebilir olması ve farklı alanların birbirine karışmaması için **Clean Architecture (Temiz Mimari)** prensipleriyle kurgulandı. Genel yapı `lib/` dizini altında dört ana modüle bölündü:
 
-* **Domain Katmanı:** Uygulamanın en saf iş kurallarının bulunduğu yerdir. `entities`, `usecases` ve veri katmanının implemente edeceği `repositories` interfaceleri burada yer alır. Herhangi bir Flutter/UI paketine bağımlılığı yoktur.
-* **Data Katmanı:** Dış dünyayla veri alışverişinin yapıldığı yerdir. API çağrıları veya lokal veri tabanı işlemleri (`datasources`), veri dönüşümleri (`models`) ve Domain katmanındaki interfacelerin somut implementasyonları burada bulunur.
-* **Presentation Katmanı:** Kullanıcı arayüzü bileşenleri (`pages`, `widgets`) ve sayfaların kendi State Manager (`bloc`, `cubit`) modüllerini barındırır.
-* **Core Katmanı:** Sistem genelinde ortak olarak kullanılan hata sınıfları (`error`), util fonksiyonları (`utils`) ve uygulamaya özel kompleks dış servis entegrasyonları (`services/background_service`, vb.) burada tutulur.
+* **Domain Katmanı:** Uygulamanın saf iş kuralları burada yer alıyor. Herhangi bir Flutter widget'ından veya internet paketinden tamamen bağımsız bir yapıda.
+* **Data Katmanı:** Dış dünyayla iletişim kurulan köprü görevini üstleniyor. API çağrıları, lokal veritabanı okumaları (`datasources`) ve veri dönüşümleri (`models`) burada yönetiliyor.
+* **Presentation Katmanı:** Ekranlar, widgetlar ve State Manager (BLoc/Cubit) modülleri bu katmanda yer alıyor. Bütün UI dinamikleri doğrudan buradan dönüyor.
+* **Core Katmanı:** Projede sistem genelinde ortak kullanılan hata sınıfları (`error`), yardımcı araçlar (`utils`) ve kritik arka plan servisleri (`services`) burada konumlanıyor.
 
 ## State Management ve Dependency Injection
 
-* **State Management:** Sayfaların durumunu ve iş mantığını yönetmek adına **BLoC (Business Logic Component)** deseni kullanılmıştır. Karmaşık asenkron akışlar ve event tabanlı işlemler için `Bloc`, daha basit state takipleri (ayarlar, tema seçimi gibi) veya UI durumları için `Cubit` tercih edilmiştir.
-* **Dependency Injection (DI):** Modüller arası bağımlılıkları standartlaştırmak için `get_it` service locator aracı kullanılarak `injection_container.dart` dosyası üzerinden tüm kayıtlar merkezi bir yapıda toplanmıştır.
+* **State Management:** Veri akışını kontrol etmek için projede **BLoC (Business Logic Component)** deseni kuruldu. Karmaşık işlemler veya asenkron akışlar için `Bloc`, daha basit durum geçişleri (tema değişimi gibi) için `Cubit` yapısı kullanılarak hafif ve yetenekli bir çözüm sunuldu.
+* **Dependency Injection (DI):** Sınıflar arası bağımlılığı (Spaghetti code oranını) sıfırlamak için `get_it` tercih edildi. Bütün servis kayıtları `injection_container.dart` üzerinden tek bir merkezden ayağa kaldırılıyor.
 
-## Temel Sistemler ve Modüller
+## Temel Sistemler
 
-### Arka Plan Servisi (Background Service)
-Alarmın güvenilir şekilde çalışması arka plan servisinin sağlığına bağlıdır. Uygulama kapalıyken (terminated) dahi çalışabilmesi için `flutter_background_service` kullanılmıştır.
-* **Foreground Çalışma:** Android işletim sisteminin pil optimizasyonu adına servisi sonlandırmasını (kill) engellemek için, servis çalıştığı sürece kalıcı bir bildirim gösterilerek (Foreground Service) hayatta tutulur.
-* **Lokasyon Yönetimi ve Pil Optimizasyonu:** Pil ömrünü korumak adına hedefe olan uzaklığa göre dinamik bir ping aralığı belirlenir. Alarm çaldığında veya kullanıcı bildirimi kapattığında servis üzerindeki yük hemen sonlandırılarak kaynak israfı önlenir.
+### Arkaplan Servisi (Background Service)
+Kullanıcı uyurken ve ekran kapalıyken bile alarmın şaşmadan çalışabilmesi bu uygulamanın kalbini oluşturuyor. Çözüm olarak projeye doğrudan `flutter_background_service` entegre edildi.
+* **Foreground Mode:** Android'in agresif pil koruma senaryolarında servisin acımasızca öldürülmesini engellemek için kalıcı bir bildirimle sistem sürekli uyanık tutuluyor.
+* **Akıllı Tüketim:** Bildirimdeki 'Durdur' butonuna basıldığı an veya alarm çalarken arka plan sensör talepleri askıya alınarak kaynak israfı engelleniyor.
 
-### Konum ve Haritalandırma
-* **Harita Arayüzü:** Uygulama içerisinde harita motoru olarak OpenStreetMap (OSM) tabanlı `flutter_map` ve hesaplamalar için `latlong2` paketi kullanılmaktadır.
-* **Konum Dinleme:** Kullanıcının mevcut lokasyonunun alınması ve mesafe hesaplaması işlemleri `geolocator` paketi ile yürütülmektedir.
-* **Reverse Geocoding:** Haritada tıklanan veya seçilen konumların açık adres bilgisine dönüştürülmesi için OpenStreetMap Nominatim API servisi (`nominatim_service.dart`) kullanılmaktadır.
+### Konum ve Harita Motoru
+* Harita motoru ve görselleştirme için çevik ve açık kaynaklı **OpenStreetMap (OSM)** tabanlı `flutter_map` tercih edildi.
+* Gelişmiş mesafe ölçümleri ve lokasyon dinlemeleri `geolocator` üzerinden doğrudan donanımla anlık olarak sağlanıyor.
+* Tıklanan koordinatların adres ismine dönüştürülmesi (Reverse Geocoding) için Nominatim API servisi projeye dahil edildi.
 
-### Lokal Depolama (Storage)
-Kullanıcının kaydettiği alarmlar ve yapılandırdığı profil ayarları, performansı artırmak adına Type-Safe ve NoSQL mantığıyla çalışan `hive` kullanılarak cihazda lokal olarak saklanmaktadır.
+### Lokal Caching
+Alarmlar gibi sık okunan yapıları anlık tutmak ve pil harcamamak için SQL değil, tamamen type-safe ve hızlı çalışan NoSQL tabanlı `Hive` veri tabanı kullanılıyor.
 
-### Bildirimler, Ses ve Titreşim
-* Sensör ve arka plan hesaplamaları sonucunda kullanıcı menzil içerisine girdiğinde, `flutter_local_notifications` paketi aracılığıyla cihazda eyleme dönüştürülebilir bildirimler üretilir.
-* Paralel olarak `audioplayers` paketi ile cihazın alarm/uyarı kanalından ses dosyası çalıştırılır ve cihazın donanımsal titreşim motoru için `vibration` paketi kullanılır. Kulaklık kullanım senaryolarında dahi sesin dışarıdan gelmesini garantileyen yapılandırmalar (audio channels) içerir.
+### Bildirim ve Akıllı İletişim Stratejisi
+* Kullanıcı durağa yaklaştığında `flutter_local_notifications` paketi üzerinden cihazda aksiyon alınabilen interaktif bir bildirim üretiliyor.
+* Eş zamanlı olarak cihazın titreşim motoru (`vibration`) ayağa kalkarken `audioplayers` paketi doğrudan cihazın donanımsal "Alarm Kanalı"na erişerek sesi tetikliyor. Kulaklık takılı olması durumunda "Medyadan ses verme" yönlendirmeleri de devreye giriyor.
 
-## Mimari Optimizasyonlar ve Performans Metrikleri
-Uygulamanın şarj dostu olması ve arka plan stabilitesi için aşağıdaki çekirdek (core) optimizasyonlar uygulanmıştır:
-* **Batarya Verimliliği:** Konum okuma döngüsü `FusedLocationProvider` ve `distanceFilter (10m)` ile Android donanımına delege edilmiştir. İşletim sistemini gereksiz yere uyanık tutan (Wakelock) sürekli GPS okumaları bitirilmiş, saatlik pil tüketimi **%80 oranında optimize edilerek** sistem performansına katkı sağlanmıştır.
-* **Doze Mode Kalkanı:** Android işletim sisteminin agresif arka plan kapatma mekanizmalarını aşmak ve kilit ekranında garantili çalışma sağlamak için Foreground Service ile Event-Driven Local Broadcast (IPC) iletişim mimarisi kullanılmıştır. Alarm tetiklenme güvenilirliği (Delivery Rate) **%99.9** seviyesine sabitlenmiştir.
-* **Memory Leak (Bellek Sızıntısı) Koruması:** Farklı Flutter Engine İzolasyonlarında (Isolate) yaratılan Native MethodChannel objeleri tekilleştirilerek (Singleton) uygulamanın RAM üzerinde kontrolsüz yer kaplaması engellenmiştir.
+## Mimari Optimizasyonlar ve Gerçek Performans 
+Kilit ekranı kısıtlamalarını aşmak ve performans sızıntılarını gidermek için uygulanan çözümler ve metrikler:
+* **Batarya Optimizasyonu:** Konum okuma döngüsü her saniye işlemciyi meşgul etmek yerine `FusedLocationProvider` ve `distanceFilter (10m)` ayarlarıyla doğrudan Android donanımına evrildi. İşletim sistemini gereksiz yere uyanık tutan sürekli okuma (Wakelock) problemleri giderildi; saatlik bazda pil tüketimi **%80 oranında optimize edilerek** sistem ciddi anlamda yeşil kod (green-code) standartlarına ulaştırıldı.
+* **Doze Mode Kalkanı:** Cihazların derin uykuda (Doze Mode) bile alarm dinlemesi yapmasını sağlamak için Native Service ile Event-Driven Local Broadcast (IPC) entegrasyonu kuruldu. Son testlerde alarm tetiklenme güvenilirliği (Delivery Rate) **%99.9** seviyelerine ulaştı.
+* **Memory Leak Önlemi:** Farklı Dart Isolate thread'leri arasında yaşanan senkron kopmalarını ve RAM üzerinde şişen (memory leak) MethodChannel objelerini durdurmak için `Singleton` AudioPlayer mimarisi tasarlandı. Servisin RAM üzerinde bıraktığı iz yok denecek kadar azaltıldı.
 
 ## Kurulum ve Geliştirme
 

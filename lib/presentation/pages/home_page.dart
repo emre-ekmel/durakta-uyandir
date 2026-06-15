@@ -35,8 +35,8 @@ class HomePage extends StatelessWidget {
           return StreamBuilder<Position>(
             stream: Geolocator.getPositionStream(
               locationSettings: const LocationSettings(
-                accuracy: LocationAccuracy.best,
-                distanceFilter: 0,
+                accuracy: LocationAccuracy.high,
+                distanceFilter: 10,
               ),
             ),
             builder: (context, snapshot) {
@@ -129,8 +129,8 @@ class HomePage extends StatelessWidget {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: alarm.isActive
-                          ? statusColor.withOpacity(0.1)
-                          : Colors.grey.withOpacity(0.1),
+                          ? statusColor.withValues(alpha: 0.1)
+                          : Colors.grey.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -163,7 +163,7 @@ class HomePage extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: Colors.blue.withOpacity(0.1),
+                              color: Colors.blue.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Row(
@@ -189,8 +189,8 @@ class HomePage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: alarm.isActive
-                            ? Colors.green.withOpacity(0.1)
-                            : Colors.grey.withOpacity(0.1),
+                            ? Colors.green.withValues(alpha: 0.1)
+                            : Colors.grey.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -209,15 +209,7 @@ class HomePage extends StatelessWidget {
               Switch(
                 value: alarm.isActive,
                 onChanged: (val) {
-                  final updated = DestinationAlarm(
-                    id: alarm.id,
-                    name: alarm.name,
-                    targetLat: alarm.targetLat,
-                    targetLng: alarm.targetLng,
-                    isActive: val,
-                    triggerRadiusInMeters: alarm.triggerRadiusInMeters,
-                  );
-                  context.read<AlarmBloc>().add(UpdateAlarm(updated));
+                  context.read<AlarmBloc>().add(UpdateAlarm(alarm.copyWith(isActive: val)));
                 },
               ),
             ],

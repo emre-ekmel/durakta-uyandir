@@ -37,7 +37,10 @@
         "open_settings": "Ayarları Aç",
         "loc_denied": "Konum izni reddedildi.",
         "loc_service_off": "Konum servisleri kapalı. Lütfen açınız.",
-        "no_result": "Sonuç bulunamadı."
+        "no_result": "Sonuç bulunamadı.",
+        "save_alarm": "Alarmı Kaydet",
+        "tap_map_hint": "Hedefinizi seçmek için haritaya dokunun",
+        "distance_label": "Mesafe"
     },
     "settings": {
         "title": "Ayarlar",

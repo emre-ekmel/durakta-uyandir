@@ -37,7 +37,10 @@
             "open_settings": "Open Settings",
             "loc_denied": "Location permission denied.",
             "loc_service_off": "Location services are disabled. Please enable them.",
-            "no_result": "No results found."
+            "no_result": "No results found.",
+            "save_alarm": "Save Alarm",
+            "tap_map_hint": "Tap on the map to select your destination",
+            "distance_label": "Distance"
         },
         "settings": {
             "title": "Settings",

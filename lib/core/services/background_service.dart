@@ -35,8 +35,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) async 
   }
 }
 
-String? _lastTriggeredAlarmId;
-DateTime? _lastTriggerTime;
+final Map<String, DateTime> _lastTriggerTimes = {};
 
 @pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
@@ -67,7 +66,7 @@ void onStart(ServiceInstance service) async {
         FlutterLocalNotificationsPlugin();
 
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@drawable/ic_notification');
     const InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
     );
@@ -141,7 +140,9 @@ void onStart(ServiceInstance service) async {
               if (service is AndroidServiceInstance) {
                 service.invoke('disableAlarmInDb', {'id': id});
               }
-            } catch (e) {}
+            } catch (e) {
+              debugPrint("[BG Service] disableAlarmInDb invoke error: $e");
+            }
             break;
           }
         }
@@ -152,7 +153,9 @@ void onStart(ServiceInstance service) async {
             if (service is AndroidServiceInstance) {
               service.invoke('disableAlarmInDb', {'id': alarm['id']});
             }
-          } catch (e) {}
+          } catch (e) {
+            debugPrint("[BG Service] disableAlarmInDb invoke error: $e");
+          }
         }
       }
     });
@@ -224,8 +227,9 @@ void onStart(ServiceInstance service) async {
         if (event.containsKey('sound')) _isSoundEnabled = event['sound'];
         if (event.containsKey('vibration')) _isVibrationEnabled = event['vibration'];
         if (event.containsKey('notification')) _isNotificationEnabled = event['notification'];
-        if (event.containsKey('headphoneOnly'))
+        if (event.containsKey('headphoneOnly')) {
           _isHeadphoneOnlyModeEnabled = event['headphoneOnly'];
+        }
 
         debugPrint(
           "[BG Service] Settings updated: Sound=$_isSoundEnabled, Vibe=$_isVibrationEnabled, Note=$_isNotificationEnabled, HeadphoneOnly=$_isHeadphoneOnlyModeEnabled",
@@ -242,7 +246,10 @@ void onStart(ServiceInstance service) async {
 
         try {
           final position = await Geolocator.getCurrentPosition(
-            timeLimit: const Duration(seconds: 10),
+            locationSettings: const LocationSettings(
+              accuracy: LocationAccuracy.high,
+              timeLimit: Duration(seconds: 10),
+            ),
           );
           debugPrint(
             "[BG Service] Immediate position check: ${position.latitude}, ${position.longitude}",
@@ -291,17 +298,14 @@ Future<void> _checkAlarms(
         targetLng,
       );
 
-      bool canTrigger = true;
-      if (_lastTriggeredAlarmId == alarm['id'] && _lastTriggerTime != null) {
-        if (DateTime.now().difference(_lastTriggerTime!).inMinutes < 1) {
-          canTrigger = false;
-        }
-      }
+      final alarmId = alarm['id'] as String;
+      final lastTime = _lastTriggerTimes[alarmId];
+      final bool canTrigger = lastTime == null ||
+          DateTime.now().difference(lastTime).inMinutes >= 1;
 
       if (distance <= radius && canTrigger) {
         debugPrint("[BG Service] !!! TRIGGERING ALARM for '${alarm['name']}' !!!");
-        _lastTriggeredAlarmId = alarm['id'];
-        _lastTriggerTime = DateTime.now();
+        _lastTriggerTimes[alarmId] = DateTime.now();
 
         try {
           await _triggerAlarm(alarm, notificationPlugin);
@@ -437,19 +441,13 @@ class BackgroundLocationService {
         FlutterLocalNotificationsPlugin();
 
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@drawable/ic_notification');
     const InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
     );
 
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) async {
-        if (response.actionId == 'stop_alarm_action' || response.actionId == null) {
-          final payload = response.payload;
-          FlutterBackgroundService().invoke('stop_alarm_from_notification', {'id': payload});
-        }
-      },
     );
 
     await flutterLocalNotificationsPlugin
@@ -473,6 +471,7 @@ class BackgroundLocationService {
       androidConfiguration: AndroidConfiguration(
         onStart: onStart,
         autoStart: false,
+        autoStartOnBoot: false,
         isForegroundMode: true,
         notificationChannelId: 'my_foreground',
         initialNotificationTitle: 'Durakta Uyandır',
@@ -502,7 +501,10 @@ class BackgroundLocationService {
 
     await _service.startService();
 
-    await Future.delayed(const Duration(milliseconds: 1500));
+    for (int i = 0; i < 15; i++) {
+      if (await _service.isRunning()) break;
+      await Future.delayed(const Duration(milliseconds: 200));
+    }
   }
 
   static Future<void> stopService() async {

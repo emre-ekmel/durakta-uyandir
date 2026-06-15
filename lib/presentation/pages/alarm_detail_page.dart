@@ -71,12 +71,10 @@ class _AlarmDetailPageState extends State<AlarmDetailPage> {
       return;
     }
 
-    final updatedAlarm = DestinationAlarm(
-      id: widget.alarm.id,
+    final updatedAlarm = widget.alarm.copyWith(
       name: newName,
       targetLat: _selectedLocation!.latitude,
       targetLng: _selectedLocation!.longitude,
-      isActive: widget.alarm.isActive,
       triggerRadiusInMeters: _radius,
     );
 
@@ -172,8 +170,8 @@ class _AlarmDetailPageState extends State<AlarmDetailPage> {
                     circles: [
                       CircleMarker(
                         point: _selectedLocation!,
-                        color: Colors.red.withOpacity(0.15),
-                        borderColor: Colors.red.withOpacity(0.5),
+                        color: Colors.red.withValues(alpha: 0.15),
+                        borderColor: Colors.red.withValues(alpha: 0.5),
                         borderStrokeWidth: 2,
                         useRadiusInMeter: true,
                         radius: _radius,
@@ -213,7 +211,7 @@ class _AlarmDetailPageState extends State<AlarmDetailPage> {
               color: Theme.of(context).cardColor,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   offset: const Offset(0, -2),
                 ),

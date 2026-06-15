@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:durakta_uyandir/core/services/background_service.dart';
 import 'package:durakta_uyandir/data/repositories/settings_repository.dart';
 import 'package:durakta_uyandir/domain/entities/destination_alarm.dart';

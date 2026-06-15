@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class MainPage extends StatefulWidget {
+  // ignore: library_private_types_in_public_api
   static final GlobalKey<_MainPageState> globalKey = GlobalKey<_MainPageState>();
 
   MainPage({Key? key}) : super(key: globalKey);
@@ -80,7 +81,9 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Durakta Uyandır'), centerTitle: true),
+      appBar: _selectedIndex == 1
+          ? null
+          : AppBar(title: const Text('Durakta Uyandır'), centerTitle: true),
       body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,

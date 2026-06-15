@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class NominatimService {
+  final http.Client _client = http.Client();
+
   Future<List<Map<String, dynamic>>> searchPlaces(String query, {double? lat, double? lon}) async {
     final Map<String, dynamic> params = {'q': query, 'limit': '5'};
 
@@ -17,7 +19,7 @@ class NominatimService {
     debugPrint("[Search] Requesting: $uri");
 
     try {
-      final response = await http.get(
+      final response = await _client.get(
         uri,
         headers: {
           'User-Agent':
@@ -66,5 +68,9 @@ class NominatimService {
       debugPrint("[Search] Exception: $e");
       return [];
     }
+  }
+
+  void dispose() {
+    _client.close();
   }
 }

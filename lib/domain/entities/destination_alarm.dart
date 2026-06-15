@@ -21,6 +21,28 @@ class DestinationAlarm extends Equatable {
     this.soundPath = 'assets/sounds/alarm.mp3',
   });
 
+  DestinationAlarm copyWith({
+    String? id,
+    String? name,
+    double? targetLat,
+    double? targetLng,
+    double? triggerRadiusInMeters,
+    bool? isActive,
+    bool? vibrate,
+    String? soundPath,
+  }) {
+    return DestinationAlarm(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      targetLat: targetLat ?? this.targetLat,
+      targetLng: targetLng ?? this.targetLng,
+      triggerRadiusInMeters: triggerRadiusInMeters ?? this.triggerRadiusInMeters,
+      isActive: isActive ?? this.isActive,
+      vibrate: vibrate ?? this.vibrate,
+      soundPath: soundPath ?? this.soundPath,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,

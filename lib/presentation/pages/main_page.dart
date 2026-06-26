@@ -1,8 +1,10 @@
+import 'package:durakta_uyandir/presentation/cubit/settings_cubit.dart';
 import 'package:durakta_uyandir/presentation/pages/add_alarm_page.dart';
 import 'package:durakta_uyandir/presentation/pages/home_page.dart';
 import 'package:durakta_uyandir/presentation/pages/settings_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class MainPage extends StatefulWidget {
@@ -30,6 +32,43 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     _checkPermissions();
+    _checkAnalyticsConsent();
+  }
+
+  Future<void> _checkAnalyticsConsent() async {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final cubit = context.read<SettingsCubit>();
+      if (cubit.state.isAnalyticsEnabled == null) {
+        _showAnalyticsConsentDialog(cubit);
+      }
+    });
+  }
+
+  void _showAnalyticsConsentDialog(SettingsCubit cubit) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: Text("settings.analytics".tr()),
+        content: Text("settings.analytics_consent_desc".tr()),
+        actions: [
+          TextButton(
+            onPressed: () {
+              cubit.setAnalyticsEnabled(false);
+              Navigator.pop(ctx);
+            },
+            child: Text("common.no".tr()),
+          ),
+          FilledButton(
+            onPressed: () {
+              cubit.setAnalyticsEnabled(true);
+              Navigator.pop(ctx);
+            },
+            child: Text("common.yes".tr()),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _checkPermissions() async {

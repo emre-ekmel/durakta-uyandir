@@ -1,6 +1,7 @@
 import 'package:durakta_uyandir/core/services/background_service.dart';
 import 'package:durakta_uyandir/data/repositories/settings_repository.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,6 +11,7 @@ class SettingsState extends Equatable {
   final bool isVibrationEnabled;
   final bool isNotificationEnabled;
   final bool isHeadphoneOnlyModeEnabled;
+  final bool? isAnalyticsEnabled;
 
   const SettingsState({
     required this.themeMode,
@@ -17,6 +19,7 @@ class SettingsState extends Equatable {
     required this.isVibrationEnabled,
     required this.isNotificationEnabled,
     required this.isHeadphoneOnlyModeEnabled,
+    this.isAnalyticsEnabled,
   });
 
   SettingsState copyWith({
@@ -25,6 +28,7 @@ class SettingsState extends Equatable {
     bool? isVibrationEnabled,
     bool? isNotificationEnabled,
     bool? isHeadphoneOnlyModeEnabled,
+    bool? isAnalyticsEnabled,
   }) {
     return SettingsState(
       themeMode: themeMode ?? this.themeMode,
@@ -32,16 +36,18 @@ class SettingsState extends Equatable {
       isVibrationEnabled: isVibrationEnabled ?? this.isVibrationEnabled,
       isNotificationEnabled: isNotificationEnabled ?? this.isNotificationEnabled,
       isHeadphoneOnlyModeEnabled: isHeadphoneOnlyModeEnabled ?? this.isHeadphoneOnlyModeEnabled,
+      isAnalyticsEnabled: isAnalyticsEnabled ?? this.isAnalyticsEnabled,
     );
   }
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
     themeMode,
     isSoundEnabled,
     isVibrationEnabled,
     isNotificationEnabled,
     isHeadphoneOnlyModeEnabled,
+    isAnalyticsEnabled,
   ];
 }
 
@@ -57,9 +63,22 @@ class SettingsCubit extends Cubit<SettingsState> {
           isVibrationEnabled: repository.isVibrationEnabled(),
           isNotificationEnabled: repository.isNotificationEnabled(),
           isHeadphoneOnlyModeEnabled: repository.isHeadphoneOnlyModeEnabled(),
+          isAnalyticsEnabled: repository.isAnalyticsEnabled(),
         ),
       ) {
     _syncWithBackground();
+    _initAnalytics();
+  }
+
+  Future<void> _initAnalytics() async {
+    final enabled = _repository.isAnalyticsEnabled();
+    if (enabled != null) {
+      try {
+        await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(enabled);
+      } catch (e) {
+        // Ignore
+      }
+    }
   }
 
   Future<void> updateTheme(ThemeMode mode) async {
@@ -89,6 +108,26 @@ class SettingsCubit extends Cubit<SettingsState> {
     await _repository.setHeadphoneOnlyModeEnabled(value);
     emit(state.copyWith(isHeadphoneOnlyModeEnabled: value));
     _syncWithBackground();
+  }
+
+  Future<void> setAnalyticsEnabled(bool value) async {
+    await _repository.setAnalyticsEnabled(value);
+    
+    // Toggle Firebase Analytics collection based on user preference
+    try {
+      await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(value);
+    } catch (e) {
+      // Ignore if Firebase is not initialized yet
+    }
+
+    emit(SettingsState(
+      themeMode: state.themeMode,
+      isSoundEnabled: state.isSoundEnabled,
+      isVibrationEnabled: state.isVibrationEnabled,
+      isNotificationEnabled: state.isNotificationEnabled,
+      isHeadphoneOnlyModeEnabled: state.isHeadphoneOnlyModeEnabled,
+      isAnalyticsEnabled: value,
+    ));
   }
 
   void _syncWithBackground() {

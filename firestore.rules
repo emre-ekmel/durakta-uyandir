@@ -1,0 +1,53 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isValidImage(img) {
+      return img is string && img.size() <= 300000;
+    }
+
+    function areImagesValid(images) {
+      return images.size() == 0 || 
+             (images.size() == 1 && isValidImage(images[0])) ||
+             (images.size() == 2 && isValidImage(images[0]) && isValidImage(images[1])) ||
+             (images.size() == 3 && isValidImage(images[0]) && isValidImage(images[1]) && isValidImage(images[2]));
+    }
+
+    function isValidFeedbackData(data) {
+      return data.userId == request.auth.uid
+          && data.keys().hasOnly(['userId', 'category', 'description', 'deviceInfo', 'images', 'createdAt'])
+          && data.keys().hasAll(['userId', 'category', 'description', 'deviceInfo', 'createdAt'])
+          && data.category is string
+          && data.category.size() <= 50
+          && data.deviceInfo is string
+          && data.deviceInfo.size() <= 1000
+          && data.description is string
+          && data.description.size() <= 500
+          && data.createdAt == request.time
+          && (!('images' in data) || 
+              (data.images is list 
+               && data.images.size() <= 3 
+               && areImagesValid(data.images)
+              )
+             );
+    }
+
+    match /feedbacks/{docId} {
+      allow create: if request.auth != null 
+                   && docId.split('_').size() == 3
+                   && docId.split('_')[0] in ['bug', 'suggestion', 'general']
+                   && docId.split('_')[1] == request.auth.uid
+                   && docId.split('_')[2] in ['1', '2', '3']
+                   && isValidFeedbackData(request.resource.data);
+
+      allow update: if request.auth != null 
+                   && docId.split('_').size() == 3
+                   && docId.split('_')[1] == request.auth.uid
+                   && request.time > resource.data.createdAt + duration.value(60, 's')
+                   && isValidFeedbackData(request.resource.data);
+                      
+      allow read: if request.auth != null && docId.split('_').size() == 3 && docId.split('_')[1] == request.auth.uid;
+    }
+  }
+}

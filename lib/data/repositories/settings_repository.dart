@@ -8,6 +8,7 @@ class SettingsRepository {
   static const String _keyVibration = 'vibration_enabled';
   static const String _keyNotification = 'notification_enabled';
   static const String _keyHeadphoneOnly = 'headphone_only_enabled';
+  static const String _keyAnalytics = 'analytics_enabled';
 
   late Box _box;
 
@@ -40,6 +41,9 @@ class SettingsRepository {
 
   bool isHeadphoneOnlyModeEnabled() => _box.get(_keyHeadphoneOnly, defaultValue: false);
   Future<void> setHeadphoneOnlyModeEnabled(bool value) => _box.put(_keyHeadphoneOnly, value);
+
+  bool? isAnalyticsEnabled() => _box.get(_keyAnalytics);
+  Future<void> setAnalyticsEnabled(bool value) => _box.put(_keyAnalytics, value);
 
   Map<String, dynamic> getAllSettings() {
     return {
